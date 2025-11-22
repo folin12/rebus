@@ -1,3 +1,7 @@
+const GH_TOKEN = document
+  .querySelector('meta[name="gh-token"]')
+  .getAttribute("content");
+
 document.getElementById("rebusForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -15,7 +19,7 @@ document.getElementById("rebusForm").addEventListener("submit", async (e) => {
         resultDiv.innerHTML = `<b>Неправильно.</b><br>Ваш ответ: ${answer}<br>Правильный ответ: ${correct}`;
     }
 
-    // Отправляем данные в GitHub Actions
+    // Отправка в GitHub Actions
     await fetch(
         "https://api.github.com/repos/folin12/rebus/actions/workflows/send-email.yml/dispatches",
         {
