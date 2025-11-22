@@ -1,0 +1,34 @@
+name: Send Email
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        required: true
+        type: string
+      answer:
+        required: true
+        type: string
+      correct:
+        required: true
+        type: stringЁ
+
+jobs:
+  email:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send email
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL }}        
+        password: ${{ secrets.PASSWORD }}     
+        to: ${{ secrets.TO_EMAIL }}          
+        from: "Rebus Bot"  
+        subject: "Ответ на ребус от ${{ github.event.inputs.name }}"
+        body: |
+          Имя: ${{ github.event.inputs.name }}
+          Ответ: ${{ github.event.inputs.answer }}
+          Правильный ответ: ${{ github.event.inputs.correct }}
