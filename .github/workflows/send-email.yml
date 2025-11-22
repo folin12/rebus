@@ -24,7 +24,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "from": "Rebus Bot",
+              "from": "Rebus Bot <onboarding@resend.dev>",
               "to": ["'"${{ secrets.TO_EMAIL }}"'"],
               "subject": "Ответ на ребус от '"${{ github.event.inputs.name }}"'",
               "html": "<strong>Имя:</strong> '"${{ github.event.inputs.name }}"'<br>
