@@ -20,14 +20,22 @@ jobs:
     steps:
       - name: Send email with Resend
         run: |
+          JSON=$(jq -n \
+            --arg from "Rebus Bot <onboarding@resend.dev>" \
+            --arg to "${{ secrets.TO_EMAIL }}" \
+            --arg subject "Ответ на ребус от ${{ github.event.inputs.name }}" \
+            --arg name "${{ github.event.inputs.name }}" \
+            --arg answer "${{ github.event.inputs.answer }}" \
+            --arg correct "${{ github.event.inputs.correct }}" \
+            '{
+              from: $from,
+              to: [$to],
+              subject: $subject,
+              html: ("<strong>Имя:</strong> " + $name + "<br><strong>Ответ:</strong> " + $answer + "<br><strong>Правильный:</strong> " + $correct)
+            }'
+          )
+
           curl -X POST "https://api.resend.com/emails" \
             -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{
-              "from": "Rebus Bot <onboarding@resend.dev>",
-              "to": ["'"${{ secrets.TO_EMAIL }}"'"],
-              "subject": "Ответ на ребус от '"${{ github.event.inputs.name }}"'",
-              "html": "<strong>Имя:</strong> '"${{ github.event.inputs.name }}"'<br>
-                       <strong>Ответ:</strong> '"${{ github.event.inputs.answer }}"'<br>
-                       <strong>Правильный:</strong> '"${{ github.event.inputs.correct }}"'"
-            }'
+            -d "$JSON"
