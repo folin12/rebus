@@ -1,4 +1,4 @@
-name: Send Email via Resend
+name: Send Email (Gmail)
 
 on:
   workflow_dispatch:
@@ -14,28 +14,21 @@ on:
         type: string
 
 jobs:
-  send_email:
+  email:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send email with Resend
-        run: |
-          JSON=$(jq -n \
-            --arg from "Rebus Bot <onboarding@resend.dev>" \
-            --arg to "${{ secrets.TO_EMAIL }}" \
-            --arg subject "Ответ на ребус от ${{ github.event.inputs.name }}" \
-            --arg name "${{ github.event.inputs.name }}" \
-            --arg answer "${{ github.event.inputs.answer }}" \
-            --arg correct "${{ github.event.inputs.correct }}" \
-            '{
-              from: $from,
-              to: [$to],
-              subject: $subject,
-              html: ("<strong>Имя:</strong> " + $name + "<br><strong>Ответ:</strong> " + $answer + "<br><strong>Правильный:</strong> " + $correct)
-            }'
-          )
-
-          curl -X POST "https://api.resend.com/emails" \
-            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d "$JSON"
+    - name: Send email via Gmail SMTP
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 587
+        username: ${{ secrets.EMAIL }}
+        password: ${{ secrets.PASSWORD }}
+        to: ${{ secrets.TO_EMAIL }}
+        from: "Rebus Bot <${{ secrets.EMAIL }}>"
+        subject: "Ответ на ребус от ${{ github.event.inputs.name }}"
+        body: |
+          Имя: ${{ github.event.inputs.name }}
+          Ответ: ${{ github.event.inputs.answer }}
+          Правильный ответ: ${{ github.event.inputs.correct }}
